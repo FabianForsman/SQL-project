@@ -30,29 +30,48 @@ CREATE VIEW PassedCourses AS
     
 CREATE VIEW Registrations AS
     SELECT 
-    student, course, 'registred' AS status 
-    FROM Registered
+    student, course, 'registered' AS status 
+    FROM Students, Registered
+    WHERE Students.idnr = Registered.student
     UNION
-    SELECT student, course, 'waiting' AS status 
-    FROM WaitingList;
-    
-CREATE VIEW MandatoryCourses AS --Our help view for all mandatory courses
-   SELECT 
-   student, 
-   MandatoryBranch.course AS course
-   FROM StudentBranches, MandatoryBranch
-   WHERE StudentBranches.branch = MandatoryBranch.branch 
-   AND StudentBranches.program = MandatoryBranch.program
-   UNION
-   SELECT idnr, MandatoryProgram.course
-   FROM Students, MandatoryProgram
-   WHERE Students.program = MandatoryProgram.program;
+    SELECT 
+    student, course, 'waiting' AS status
+    FROM Students, Waitinglist
+    WHERE Students.idnr = Waitinglist.student;
+
+
+CREATE VIEW MandatoryCourses AS
+    SELECT 
+    idnr, 
+    BasicInformation.program, 
+    BasicInformation.branch, 
+    course
+    FROM BasicInformation
+    JOIN MandatoryProgram 
+    ON MandatoryProgram.program = BasicInformation.program
+    UNION
+    SELECT 
+    idnr, 
+    BasicInformation.program, 
+    BasicInformation.branch, 
+    course
+    FROM BasicInformation
+    JOIN MandatoryBranch 
+    ON MandatoryBranch.program=BasicInformation.program 
+    AND MandatoryBranch.branch=BasicInformation.branch;
+
 
 CREATE VIEW UnreadMandatory AS
-    SELECT *
-    FROM MandatoryCourses
+    SELECT 
+    Students.idnr AS student, 
+    MandatoryCourses.course
+    FROM Students
+    JOIN MandatoryCourses 
+    ON Students.idnr=MandatoryCourses.idnr
     EXCEPT
-    SELECT student, course
+    SELECT 
+    student, 
+    course
     FROM PassedCourses;
    
 CREATE VIEW TotalCredits AS
@@ -121,7 +140,7 @@ CREATE VIEW PassedRecommendedCredit AS
     SUM(credits) as recommendedcredits
     FROM PassedRecommendedCourses
     GROUP BY student;
-
+     
 
 CREATE VIEW PathToGraduation AS
     SELECT
