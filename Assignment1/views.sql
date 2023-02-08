@@ -101,83 +101,47 @@ CREATE VIEW SeminarCourses AS
     GROUP BY student;
 
 
-CREATE VIEW RecommendedCourses AS
+CREATE VIEW PassedRecommendedCourses AS
     SELECT 
     student, 
-    RecommendedBranch.course AS course,
-    Courses.credits as credits
-    FROM StudentBranches, RecommendedBranch
-    LEFT OUTER JOIN
-    Courses 
-    ON RecommendedBranch.course = Courses.code
-    WHERE StudentBranches.branch = RecommendedBranch.branch 
-    AND StudentBranches.program = RecommendedBranch.program;
-
-
-CREATE VIEW PassedRecommendedCourses AS 
-    SELECT *
-    FROM RecommendedCourses
-    INTERSECT
-    SELECT 
-    PassedCourses.student as student, 
-    PassedCourses.course as course,
+    PassedCourses.course AS course,
     PassedCourses.credits as credits
-    FROM PassedCourses;
+    FROM PassedCourses
+    LEFT JOIN BasicInformation 
+    ON PassedCourses.student = BasicInformation.idnr
+    JOIN RecommendedBranch
+    ON RecommendedBranch.program = BasicInformation.program
+    AND RecommendedBranch.branch = BasicInformation.branch
+    AND RecommendedBranch.course = PassedCourses.course;
 
 
-CREATE VIEW Requirements AS
-    SELECT
-    BasicInformation.idnr as student,
-    COALESCE(MandatoryLeft.mandatoryleft, 0) as mandatory,
-    COALESCE(PassedRecommendedCourses.credits, 0) as recommended,
-    COALESCE(MathCredits.mathcredits, 0) as math,
-    COALESCE(ResearchCredits.researchcredits, 0) as research,
-    COALESCE(SeminarCourses.seminarcourses, 0) as seminar
-    FROM BasicInformation
-    LEFT OUTER JOIN 
-    MandatoryLeft
-    ON BasicInformation.idnr = MandatoryLeft.student
-    LEFT OUTER JOIN
-    PassedRecommendedCourses
-    ON BasicInformation.idnr = PassedRecommendedCourses.student
-    LEFT OUTER JOIN
-    MathCredits
-    ON BasicInformation.idnr = MathCredits.student
-    LEFT OUTER JOIN
-    ResearchCredits
-    ON BasicInformation.idnr = ResearchCredits.student
-    LEFT OUTER JOIN
-    SeminarCourses
-    ON BasicInformation.idnr = SeminarCourses.student;
-     
-CREATE VIEW Qualified AS
-    SELECT
-    Requirements.student AS student,
-    CASE
-        WHEN (Requirements.mandatory = 0
-        AND Requirements.recommended >= 10
-        AND Requirements.math >= 20
-        AND Requirements.research >= 20
-        AND Requirements.seminar >= 1)
-        THEN TRUE
-        ELSE FALSE
-    END as qualified
-    FROM Requirements;
+CREATE VIEW PassedRecommendedCredit AS 
+    SELECT 
+    student,
+    SUM(credits) as recommendedcredits
+    FROM PassedRecommendedCourses
+    GROUP BY student;
 
 
 CREATE VIEW PathToGraduation AS
-    SELECT 
-    Requirements.student AS student,
-    COALESCE(TotalCredits.totalcredits, 0) as TotalCredits,
-    Requirements.mandatory AS mandatoryLeft,
-    Requirements.math AS mathCredits,
-    Requirements.research AS researchCredits,
-    Requirements.seminar AS seminarCourses, 
-    Qualified.qualified AS qualified
-    FROM Requirements
-    LEFT OUTER JOIN
-    Qualified 
-    ON Qualified.student = Requirements.student
-    LEFT OUTER JOIN
-    TotalCredits
-    ON Requirements.student = TotalCredits.student
+    SELECT
+        BasicInformation.idnr as student,
+        COALESCE(TotalCredits.totalcredits, 0) as totalCredits,
+        COALESCE(MandatoryLeft.mandatoryleft, 0) as mandatoryLeft,
+        COALESCE(MathCredits.mathcredits, 0) as mathCredits,
+        COALESCE(ResearchCredits.researchcredits, 0) as researchCredits,
+        COALESCE(SeminarCourses.seminarcourses, 0) as seminarCourses,
+        BasicInformation.branch IS NOT NULL
+        AND COALESCE(MandatoryLeft.mandatoryleft, 0) = 0
+        AND COALESCE(PassedRecommendedCredit.recommendedcredits, 0) >= 10
+        AND COALESCE(MathCredits.mathcredits, 0) >= 20
+        AND COALESCE(ResearchCredits.researchcredits, 0) >= 10
+        AND COALESCE(SeminarCourses.seminarcourses, 0) >= 1
+        AS qualified
+    FROM BasicInformation
+    LEFT JOIN TotalCredits ON idnr=TotalCredits.student
+    LEFT JOIN MandatoryLeft ON idnr=MandatoryLeft.student
+    LEFT JOIN MathCredits ON idnr=MathCredits.student
+    LEFT JOIN ResearchCredits ON idnr=ResearchCredits.student
+    LEFT JOIN SeminarCourses ON idnr=SeminarCourses.student
+    LEFT JOIN PassedRecommendedCredit ON idnr=PassedRecommendedCredit.student;
