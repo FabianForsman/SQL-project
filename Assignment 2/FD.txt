@@ -1,0 +1,36 @@
+1.
+D(studentIdnr, 
+studentName, 
+login, 
+branchName, 
+programName, 
+courseCode, 
+courseName, 
+credits, 
+departmentName, 
+capacity, 
+classification, 
+grade, 
+position)
+
+
+2.
+DepartmentName -> DepartmentAbbreviation 
+ProgramName -> ProgramAbbreviation 
+ProgramName -> DepartmentName
+BranchName -> ProgramName 
+CourseCode -> CourseName 
+CourseCode -> Credits 
+CourseCode -> DepartmentName 
+CourseCode -> Capacity 
+CourseCode -> Classification 
+CourseCode -> Prerequisites
+StudentIdnr -> StudentName 
+StudentIdnr -> Login
+StudentIdnr -> ProgramName 
+StudentIdnr -> BranchName 
+StudentIdnr CourseCode -> Grade 
+StudentIdnr CourseCode -> Position
+
+
+3.
