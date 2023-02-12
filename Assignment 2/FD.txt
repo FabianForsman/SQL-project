@@ -15,6 +15,84 @@ position)
 
 
 2.
+ProgramName -> DepartmentName
+BranchName -> ProgramName 
+CourseCode -> CourseName 
+CourseCode -> Credits 
+CourseCode -> DepartmentName 
+CourseCode -> Capacity 
+CourseCode -> Classification 
+StudentIdnr -> StudentName 
+StudentIdnr -> Login
+StudentIdnr -> ProgramName 
+StudentIdnr -> BranchName 
+StudentIdnr CourseCode -> Grade 
+StudentIdnr CourseCode -> Position
+
+DepartmentName -> DepartmentAbbreviation 
+ProgramName -> ProgramAbbreviation 
+CourseCode -> Prerequisites
+
+
+
+3.
+
+Student Information:
+R1(studentIdnr, studentName, login, programName, branchName)
+Functional Dependency: studentIdnr -> studentName, login, programName, branchName
+
+Course Information:
+R2(courseCode, courseName, credits, departmentName, capacity, classification)
+Functional Dependency: courseCode -> courseName, credits, departmentName, capacity, classification
+
+Program Information:
+R3(programName, departmentName, branchName)
+Functional Dependency: programName, branchName -> departmentName
+
+Student-Course Enrollment:
+R4(studentIdnr, courseCode, grade, position)
+Functional Dependency: studentIdnr, courseCode -> grade, position
+
+4.
+
+courseCode ->-> classification
+
+CourseClassifications(courseCode, classification)
+Students(studentIdnr, studentName, login, branchName, programName, courseCode, courseName, credits, departmentName, capacity, grade, position)
+Courses(courseCode, courseName, credits, departmentName, capacity)
+Programs(programName, programAbbreviation, departmentName)
+Branches(branchName, programName)
+Department(departmentName, departmentAbbreviation)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DepartmentAbbreviation DepartmentName ProgramAbbreviation ProgramName BranchName CourseName CourseCode Credits Capacity Classification Prerequisites StudentName StudentIdnr Login Grade Position 
+
 DepartmentName -> DepartmentAbbreviation 
 ProgramName -> ProgramAbbreviation 
 ProgramName -> DepartmentName
@@ -31,6 +109,3 @@ StudentIdnr -> ProgramName
 StudentIdnr -> BranchName 
 StudentIdnr CourseCode -> Grade 
 StudentIdnr CourseCode -> Position
-
-
-3.
