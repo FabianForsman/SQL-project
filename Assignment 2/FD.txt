@@ -15,23 +15,23 @@ position)
 
 
 2.
-ProgramName -> DepartmentName
-BranchName -> ProgramName 
+
 CourseCode -> CourseName 
 CourseCode -> Credits 
 CourseCode -> DepartmentName 
 CourseCode -> Capacity 
-CourseCode -> Classification 
 StudentIdnr -> StudentName 
 StudentIdnr -> Login
 StudentIdnr -> ProgramName 
 StudentIdnr -> BranchName 
 StudentIdnr CourseCode -> Grade 
 StudentIdnr CourseCode -> Position
+Position CourseCode -> StudentIdnr
+Login -> StudentIDnr
 
-DepartmentName -> DepartmentAbbreviation 
-ProgramName -> ProgramAbbreviation 
-CourseCode -> Prerequisites
+Others:
+BranchName -> ProgramName 
+CourseCode -> Classification 
 
 
 
