@@ -1,4 +1,5 @@
-Department(_name_, _abbreviation_)
+Department(_name_, abbreviation)
+    Unique abbreviation
 
 Program(_name_, abbreviation)
 
@@ -8,7 +9,8 @@ Branch(_na_me_, _program_)
 Course(_code_, name, credits)
 
 Student(_idnr_, name, login, program)
-	program -> Program.name
+	program -> Program.name,
+    Unique login
 
 DepInProgram(_department_, _program_)
     department -> Department.name
@@ -49,7 +51,8 @@ PrerequisiteCourse(_course_, _prerequisite_)
 
 StudentBranch( _student_, branch, program,)
     student -> Student.idnr
-    (branch, program) -> Branch.(name, program)
+    (branch, program) -> Branch.(name, program),
+    (student, program) -> Student.(idnr, program)
 
 Taken(_student_, _course_, grade)
     student -> Student.idnr
