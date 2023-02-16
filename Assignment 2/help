@@ -1,0 +1,18 @@
+DepartmentAbbreviation DepartmentName ProgramAbbreviation ProgramName BranchName CourseName CourseCode Credits Capacity Classification Prerequisites StudentName StudentIdnr Login Grade Position 
+
+DepartmentName -> DepartmentAbbreviation 
+ProgramName -> ProgramAbbreviation 
+ProgramName -> DepartmentName
+BranchName -> ProgramName 
+CourseCode -> CourseName 
+CourseCode -> Credits 
+CourseCode -> DepartmentName 
+CourseCode -> Capacity 
+CourseCode -> Classification 
+CourseCode -> Prerequisites
+StudentIdnr -> StudentName 
+StudentIdnr -> Login
+StudentIdnr -> ProgramName 
+StudentIdnr -> BranchName 
+StudentIdnr CourseCode -> Grade 
+StudentIdnr CourseCode -> Position
