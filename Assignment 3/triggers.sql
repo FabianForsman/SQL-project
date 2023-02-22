@@ -45,9 +45,9 @@ CREATE OR REPLACE FUNCTION register() RETURNS TRIGGER AS $$
             WHERE student = NEW.student 
             AND course = NEW.course
         )
-            THEN RAISE EXCEPTION '% is already regisred for course %', NEW.student, NEW.course;
+            THEN RAISE EXCEPTION '% is already registered for course %', NEW.student, NEW.course;
         END IF;
-
+        RETURN NEW;
     END;
 $$LANGUAGE plpgsql;
 

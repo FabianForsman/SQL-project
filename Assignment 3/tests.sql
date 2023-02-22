@@ -22,6 +22,7 @@ SET client_min_messages TO NOTICE; -- More talk
 -- Tests various queries from the assignment, uncomment these as you make progress
 SELECT course, student, place FROM CourseQueuePosition ORDER BY course;
 
-INSERT INTO Registrations VALUES('XXXXXXXXXX','CCC222');
+--INSERT INTO Registrations VALUES('3333333333','CCC222'); -- Already registered for this course. 
+INSERT INTO Registrations VALUES('3333333333', 'CCC555'); -- Doesn't work yet. 
 
 SELECT course, student, place FROM CourseQueuePosition ORDER BY course;

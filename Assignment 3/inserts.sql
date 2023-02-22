@@ -1,8 +1,3 @@
-INSERT INTO Programs VALUES ('Prog1', 'P1');
-INSERT INTO Programs VALUES ('Prog2', 'P2');
-
-INSERT INTO Departments VALUES ('Dep1', 'D1');
-
 INSERT INTO Branches VALUES ('B1','Prog1');
 INSERT INTO Branches VALUES ('B2','Prog1');
 INSERT INTO Branches VALUES ('B1','Prog2');
@@ -31,7 +26,6 @@ INSERT INTO Classified VALUES ('CCC333','math');
 INSERT INTO Classified VALUES ('CCC444','math');
 INSERT INTO Classified VALUES ('CCC444','research');
 INSERT INTO Classified VALUES ('CCC444','seminar');
-
 
 INSERT INTO StudentBranches VALUES ('2222222222','B1','Prog1');
 INSERT INTO StudentBranches VALUES ('3333333333','B1','Prog2');

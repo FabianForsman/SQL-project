@@ -133,11 +133,10 @@ CREATE TABLE WaitingList(
     PRIMARY KEY(student, course)
 );
 
+INSERT INTO Programs VALUES ('Prog1', 'P1'); -- Ours
+INSERT INTO Programs VALUES ('Prog2', 'P2'); -- Ours
 
-INSERT INTO Programs VALUES ('Prog1', 'P1');
-INSERT INTO Programs VALUES ('Prog2', 'P2');
-
-INSERT INTO Departments VALUES ('Dep1', 'D1');
+INSERT INTO Departments VALUES ('Dep1', 'D1'); -- Ours
 
 INSERT INTO Branches VALUES ('B1','Prog1');
 INSERT INTO Branches VALUES ('B2','Prog1');
@@ -206,8 +205,8 @@ INSERT INTO WaitingList VALUES('3333333333','CCC222',1);
 INSERT INTO WaitingList VALUES('3333333333','CCC333',1);
 INSERT INTO WaitingList VALUES('2222222222','CCC333',2);
 
---INSERT INTO Registrations VALUES('5555555555','CCC222');
-
+--INSERT INTO Registrations VALUES('5555555555','CCC222'); -- Ours
+INSERT INTO PrerequisiteCourse VALUES('CCC444', 'CCC555'); -- Ours
 
 CREATE VIEW BasicInformation AS
     SELECT 
