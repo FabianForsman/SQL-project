@@ -19,7 +19,8 @@ CREATE TABLE Branches (
 CREATE TABLE Courses (
     code CHAR(6) PRIMARY KEY,
     name TEXT NOT NULL,
-    credits FLOAT NOT NULL
+    credits FLOAT NOT NULL,
+    department TEXT NOT NULL REFERENCES Departments(name),
     CHECK (credits >= 0)
 );
 
@@ -27,30 +28,39 @@ CREATE TABLE Students (
     idnr CHAR(10) PRIMARY KEY,
     name TEXT NOT NULL,
     login TEXT UNIQUE NOT NULL,
-    program TEXT NOT NULL REFERENCES Programs
-);
-
-CREATE TABLE DepInProgram (
-    department TEXT NOT NULL REFERENCES Departments,
     program TEXT NOT NULL REFERENCES Programs,
-    PRIMARY KEY(department, program)
+    UNIQUE(idnr, program)
 );
 
---CREATE TABLE GivenBy
+--CREATE TABLE DepInProgram (
+--    department TEXT NOT NULL REFERENCES Departments,
+--    program TEXT NOT NULL REFERENCES Programs,
+--    PRIMARY KEY(department, program)
+--);
+
+
+--CREATE TABLE GivenBy (
+--    department TEXT NOT NULL REFERENCES Departments,
+--    course CHAR(6) NOT NULL REFERENCES Courses(code),
+--    PRIMARY KEY(course)
+--);
 
 
 CREATE TABLE MandatoryProgram (
     course CHAR(6) REFERENCES Courses(code),
-    program TEXT NOT NULL,
+    program TEXT NOT NULL REFERENCES Programs(name),
     PRIMARY KEY (course, program)
 );
 
+--CREATE TABLE MandatoryCourses (
+--    code CHAR(6) NOT NULL PRIMARY KEY,
+--    credits FLOAT NOT NULL
+--);
 
---CREATE TABLE MandatoryCourses
-
-
---CREATE TABLE ReccomendedCourses
-
+CREATE TABLE RecommendedCourses (
+    code CHAR(6) NOT NULL PRIMARY KEY,
+    credits FLOAT NOT NULL
+);
 
 CREATE TABLE MandatoryBranch(
     course CHAR(6) REFERENCES Courses(code),
@@ -76,30 +86,29 @@ CREATE TABLE LimitedCourses (
     PRIMARY KEY (code)
 );
 
-CREATE TABLE StudentBranches (
-    student TEXT REFERENCES Students(idnr),
-    branch TEXT NOT NULL,
-    program TEXT NOT NULL,
-    FOREIGN KEY (branch, program) REFERENCES Branches(name, program),
-    PRIMARY KEY (student)
-);
-
-CREATE TABLE Classifications(
+CREATE TABLE Classifications (
     name TEXT PRIMARY KEY
 );
 
-CREATE TABLE Classified(
+CREATE TABLE Classified (
     course CHAR(6) REFERENCES Courses(code),
     classification TEXT REFERENCES Classifications(name),
     PRIMARY KEY(course, classification)
 );
 
-
-
-CREATE TABLE Registered(
-    student CHAR(10) REFERENCES Students(idnr),
+CREATE TABLE PrerequisiteCourse (
     course CHAR(6) REFERENCES Courses(code),
-    PRIMARY KEY(student, course)
+    prerequisite TEXT REFERENCES Courses(code),
+    PRIMARY KEY (course, prerequisite)
+);
+
+CREATE TABLE StudentBranches (
+    student TEXT NOT NULL,
+    branch TEXT NOT NULL,
+    program TEXT NOT NULL,
+    FOREIGN KEY (student, program) REFERENCES Students(idnr, program),
+    FOREIGN KEY (branch, program) REFERENCES Branches(name, program),
+    PRIMARY KEY (student)
 );
 
 CREATE TABLE Taken(
@@ -109,6 +118,13 @@ CREATE TABLE Taken(
     CHECK (grade IN ('3', '4', '5', 'U')),
     PRIMARY KEY(student, course)
 );
+
+CREATE TABLE Registered(
+    student CHAR(10) REFERENCES Students(idnr),
+    course CHAR(6) REFERENCES Courses(code),
+    PRIMARY KEY(student, course)
+);
+
 
 CREATE TABLE WaitingList(
     student CHAR(10) REFERENCES Students(idnr),
