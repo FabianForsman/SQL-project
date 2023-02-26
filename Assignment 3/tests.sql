@@ -41,36 +41,6 @@ INSERT INTO Registrations VALUES ('2222222222', 'CCC444');
 -- EXPECTED OUTCOME: Pass
 DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC444';
 
--- TEST #4: Register to limited course.
--- EXPECTED OUTCOME: Pass
---INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
 
--- TEST #5: Try to register for course already passed.
--- EXPECTED OUTCOME: Fail
---INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
-
--- TEST #6: Unregister from a limited course without waiting list.
--- EXPECTED OUTCOME: Pass
---DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
-
--- TEST #7: Unregister from a limited course with waiting list while being in the middle of the waiting list.
--- EXPECTED OUTCOME: Pass
---DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
-
--- TEST #8: Unregister from a limited course with a waiting list while being registered.
--- EXPECTED OUTCOME: Pass
---DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
-
--- TEST #9: Unregister from an overfull course with waiting list while being registered.
--- EXPECTED OUTCOME: Pass
---DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
-
--- TEST #10: Wait for limited course.
--- EXPECTED OUTCOME: Pass
---INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
-
--- TEST #11: Try to register for a course where the prerequisites haven't been taken.
--- EXPECTED OUTCOME: Fail
---INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
 
 SELECT student, course, status FROM Registrations ORDER BY student;
