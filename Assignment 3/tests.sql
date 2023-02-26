@@ -23,6 +23,54 @@ SET client_min_messages TO NOTICE; -- More talk
 SELECT course, student, place FROM CourseQueuePosition ORDER BY course;
 
 --INSERT INTO Registrations VALUES('3333333333','CCC222'); -- Already registered for this course. 
-INSERT INTO Registrations VALUES('3333333333', 'CCC555'); -- Doesn't work yet. 
+--INSERT INTO Registrations VALUES('3333333333', 'CCC555'); -- Doesn't work yet. 
+--INSERT INTO Registrations VALUES('2222222222', 'CCC444'); 
 
 SELECT course, student, place FROM CourseQueuePosition ORDER BY course;
+
+
+-- TEST #1: Register for an unlimited course.
+-- EXPECTED OUTCOME: Pass
+INSERT INTO Registrations VALUES ('2222222222', 'CCC444');
+
+-- TEST #2: Register an already registered student.
+-- EXPECTED OUTCOME: Fail
+INSERT INTO Registrations VALUES ('2222222222', 'CCC444');
+
+-- TEST #3: Unregister from an unlimited course. 
+-- EXPECTED OUTCOME: Pass
+DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC444';
+
+-- TEST #4: Register to limited course.
+-- EXPECTED OUTCOME: Pass
+--INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
+
+-- TEST #5: Try to register for course already passed.
+-- EXPECTED OUTCOME: Fail
+--INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
+
+-- TEST #6: Unregister from a limited course without waiting list.
+-- EXPECTED OUTCOME: Pass
+--DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
+
+-- TEST #7: Unregister from a limited course with waiting list while being in the middle of the waiting list.
+-- EXPECTED OUTCOME: Pass
+--DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
+
+-- TEST #8: Unregister from a limited course with a waiting list while being registered.
+-- EXPECTED OUTCOME: Pass
+--DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
+
+-- TEST #9: Unregister from an overfull course with waiting list while being registered.
+-- EXPECTED OUTCOME: Pass
+--DELETE FROM Registrations where student = 'XXXXXXXXXX' AND course = 'CCCXXX';
+
+-- TEST #10: Wait for limited course.
+-- EXPECTED OUTCOME: Pass
+--INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
+
+-- TEST #11: Try to register for a course where the prerequisites haven't been taken.
+-- EXPECTED OUTCOME: Fail
+--INSERT INTO Registrations VALUES ('XXXXXXXXXX', 'CCCXXX');
+
+SELECT student, course, status FROM Registrations ORDER BY student;

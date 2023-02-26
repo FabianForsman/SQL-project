@@ -11,6 +11,8 @@ Course(_code_, name, credits)
 Student(_idnr_, name, login, program)
 	program -> Program.name,
     Unique login
+        Unique (idnr, program)
+        program -> Program.name
 
 DepInProgram(_department_, _program_)
     department -> Department.name
@@ -52,7 +54,7 @@ PrerequisiteCourse(_course_, _prerequisite_)
 StudentBranch( _student_, branch, program,)
     student -> Student.idnr
     (branch, program) -> Branch.(name, program),
-    (student, program) -> Student.(idnr, program)
+        (student, program) -> Student.(idnr, program)
 
 Taken(_student_, _course_, grade)
     student -> Student.idnr
@@ -63,5 +65,6 @@ Registered(_student_, _course_)
     course -> Course.code
 
 WaitingList(_student_, _course_, position)
+        Unique (course, position)
     student -> Student.idnr
     course -> LimitedCourse.code

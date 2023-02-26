@@ -131,4 +131,5 @@ CREATE TABLE WaitingList(
     course CHAR(6) REFERENCES LimitedCourses(code),
     position SERIAL,
     PRIMARY KEY(student, course)
+    UNIQUE(course, position)
 );
