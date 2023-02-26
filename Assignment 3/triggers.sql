@@ -1,5 +1,5 @@
 
-CREATE VIEW CourseQueuePosition AS
+CREATE VIEW CourseQueuePositions AS
     SELECT
     course, 
     student,
