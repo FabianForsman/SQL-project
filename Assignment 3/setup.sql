@@ -78,7 +78,6 @@ CREATE TABLE RecommendedBranch(
     PRIMARY KEY(course, branch, program)
 );
 
-
 CREATE TABLE LimitedCourses (
     code CHAR(6) REFERENCES Courses(code),
     capacity INT NOT NULL,
@@ -129,7 +128,7 @@ CREATE TABLE Registered(
 CREATE TABLE WaitingList(
     student CHAR(10) REFERENCES Students(idnr),
     course CHAR(6) REFERENCES LimitedCourses(code),
-    position SERIAL,
+    position INT NOT NULL CHECK (position > 0),
     PRIMARY KEY(student, course)
 );
 
@@ -158,8 +157,6 @@ INSERT INTO Courses VALUES ('CCC555','C5',50,'Dep1');
 
 INSERT INTO LimitedCourses VALUES ('CCC222',1);
 INSERT INTO LimitedCourses VALUES ('CCC333',3);
---INSERT INTO LimitedCourses VALUES ('CCC555',1); -- Ours
---INSERT INTO LimitedCourses VALUES ('CCC666',1); -- Ours
 
 INSERT INTO PrerequisiteCourse VALUES('CCC333', 'CCC111'); -- Ours
 
@@ -206,11 +203,13 @@ INSERT INTO Taken VALUES('2222222222','CCC111','U');
 INSERT INTO Taken VALUES('2222222222','CCC222','U');
 INSERT INTO Taken VALUES('2222222222','CCC444','U');
 
+-- To help with 6666666666's registration on CCC333:
+INSERT INTO Taken VALUES ('6666666666', 'CCC111', '5');
+
 INSERT INTO WaitingList VALUES('3333333333','CCC222',1);
 INSERT INTO WaitingList VALUES('3333333333','CCC333',1);
 INSERT INTO WaitingList VALUES('2222222222','CCC333',2);
 
---INSERT INTO Registrations VALUES('5555555555','CCC222'); -- Ours
 
 CREATE OR REPLACE VIEW BasicInformation AS
     SELECT 

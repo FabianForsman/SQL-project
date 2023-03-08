@@ -75,24 +75,24 @@ CREATE OR REPLACE FUNCTION register() RETURNS TRIGGER AS $$
                 THEN 
             --If course is full
             IF (
-                SELECT COUNT(*) 
+                SELECT COUNT(*)
                 FROM Registered 
                 WHERE course = NEW.course) >= (
                     SELECT capacity 
                     FROM LimitedCourses 
                     WHERE code = NEW.course) 
-                    THEN
-                --Put student in waiting list
-                INSERT INTO WaitingList (student, course, position)
-                VALUES (NEW.student, NEW.course, NOW());
-                RAISE NOTICE 'Course % is full, % is put on the waiting list', NEW.course, NEW.student;
-                RETURN NULL;
+                THEN
+                    --Put student in waiting list
+                    INSERT INTO WaitingList (student, course, position)
+                    VALUES (NEW.student, NEW.course, nextStudentPos(NEW.course));
+                    RAISE NOTICE 'Course % is full, % is put on the waiting list', NEW.course, NEW.student;
+                    RETURN NULL;
             END IF;
             --course is not full
         END IF;
 
         -- Register student unless they are on waiting list
-        INSERT INTO Registrations (course, student)
+        INSERT INTO Registered (course, student)
         VALUES (NEW.course, NEW.student);
         RETURN NEW;
 
@@ -105,12 +105,16 @@ BEGIN
 END
 $$LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION nextStudentPos(CHAR(6)) RETURNS INT AS $nextStudentPos$
+        SELECT COUNT(*)+1 FROM WaitingList WHERE course = $1
+        $nextStudentPos$ LANGUAGE SQL;
+
 CREATE TRIGGER addingToQueue
-    INSTEAD OF INSERT ON Registrations
+    INSTEAD OF INSERT OR UPDATE ON Registrations
     FOR EACH ROW
     EXECUTE FUNCTION register();
 
 CREATE TRIGGER removeFromQueue
-    INSTEAD OF DELETE ON Registrations
+    INSTEAD OF DELETE OR UPDATE ON Registrations
     FOR EACH ROW
     EXECUTE FUNCTION unregister();
