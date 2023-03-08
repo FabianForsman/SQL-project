@@ -31,7 +31,9 @@
 
 
 
-
+-- TEST #3: Unregister from an unlimited course. 
+-- EXPECTED OUTCOME: Pass
+-- DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC444';
 
 -- TEST #4: Register to limited course.
 -- EXPECTED OUTCOME: Pass

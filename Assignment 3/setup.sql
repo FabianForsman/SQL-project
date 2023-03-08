@@ -98,7 +98,7 @@ CREATE TABLE Classified (
 
 CREATE TABLE PrerequisiteCourse (
     course CHAR(6) REFERENCES Courses(code),
-    prerequisite TEXT REFERENCES Courses(code),
+    prerequisite CHAR(6) REFERENCES Courses(code),
     PRIMARY KEY (course, prerequisite)
 );
 
@@ -154,9 +154,14 @@ INSERT INTO Courses VALUES ('CCC222','C2',20,'Dep1');
 INSERT INTO Courses VALUES ('CCC333','C3',30,'Dep1');
 INSERT INTO Courses VALUES ('CCC444','C4',60,'Dep1');
 INSERT INTO Courses VALUES ('CCC555','C5',50,'Dep1');
+--INSERT INTO Courses VALUES ('CCC666','C6',30,'Dep1'); -- Ours
 
 INSERT INTO LimitedCourses VALUES ('CCC222',1);
-INSERT INTO LimitedCourses VALUES ('CCC333',2);
+INSERT INTO LimitedCourses VALUES ('CCC333',3);
+--INSERT INTO LimitedCourses VALUES ('CCC555',1); -- Ours
+--INSERT INTO LimitedCourses VALUES ('CCC666',1); -- Ours
+
+INSERT INTO PrerequisiteCourse VALUES('CCC333', 'CCC111'); -- Ours
 
 INSERT INTO Classifications VALUES ('math');
 INSERT INTO Classifications VALUES ('research');
@@ -206,9 +211,8 @@ INSERT INTO WaitingList VALUES('3333333333','CCC333',1);
 INSERT INTO WaitingList VALUES('2222222222','CCC333',2);
 
 --INSERT INTO Registrations VALUES('5555555555','CCC222'); -- Ours
-INSERT INTO PrerequisiteCourse VALUES('CCC444', 'CCC555'); -- Ours
 
-CREATE VIEW BasicInformation AS
+CREATE OR REPLACE VIEW BasicInformation AS
     SELECT 
     Students.idnr as idnr,
     Students.name as name,
@@ -229,7 +233,7 @@ CREATE OR REPLACE VIEW FinishedCourses AS
     WHERE Taken.course = Courses.code
     ORDER BY student;
 
-CREATE VIEW PassedCourses AS
+CREATE OR REPLACE VIEW PassedCourses AS
     SELECT
     Taken.student as student,
     Taken.course as course,
@@ -247,7 +251,7 @@ CREATE OR REPLACE VIEW Registrations AS
     student, course, 'waiting' AS status
     FROM Waitinglist;
 
-CREATE VIEW MandatoryCourses AS
+CREATE OR REPLACE VIEW MandatoryCourses AS
     SELECT 
     idnr, 
     BasicInformation.program, 
@@ -268,7 +272,7 @@ CREATE VIEW MandatoryCourses AS
     AND MandatoryBranch.branch=BasicInformation.branch;
 
 
-CREATE VIEW UnreadMandatory AS
+CREATE OR REPLACE VIEW UnreadMandatory AS
     SELECT 
     Students.idnr AS student, 
     MandatoryCourses.course
@@ -281,21 +285,21 @@ CREATE VIEW UnreadMandatory AS
     course
     FROM PassedCourses;
    
-CREATE VIEW TotalCredits AS
+CREATE OR REPLACE VIEW TotalCredits AS
     SELECT 
     student,
     SUM(credits) as totalcredits
     FROM PassedCourses
     GROUP BY student;
 
-CREATE VIEW MandatoryLeft AS
+CREATE OR REPLACE VIEW MandatoryLeft AS
     SELECT 
     student, 
     COUNT(student) as mandatoryleft
     FROM UnreadMandatory
     GROUP BY student;
 
-CREATE VIEW MathCredits AS
+CREATE OR REPLACE VIEW MathCredits AS
     SELECT 
     student, 
     SUM(credits) as mathcredits
@@ -305,7 +309,7 @@ CREATE VIEW MathCredits AS
     AND Classified.classification = 'math'
     GROUP BY student;
 
-CREATE VIEW ResearchCredits AS
+CREATE OR REPLACE VIEW ResearchCredits AS
     SELECT 
     student, 
     SUM(credits) as researchcredits
@@ -316,7 +320,7 @@ CREATE VIEW ResearchCredits AS
     GROUP BY student;
 
 
-CREATE VIEW SeminarCourses AS
+CREATE OR REPLACE VIEW SeminarCourses AS
     SELECT 
     student, 
     COUNT(PassedCourses.course) as seminarcourses
@@ -327,7 +331,7 @@ CREATE VIEW SeminarCourses AS
     GROUP BY student;
 
 
-CREATE VIEW PassedRecommendedCourses AS
+CREATE OR REPLACE VIEW PassedRecommendedCourses AS
     SELECT 
     student, 
     PassedCourses.course AS course,
@@ -341,7 +345,7 @@ CREATE VIEW PassedRecommendedCourses AS
     AND RecommendedBranch.course = PassedCourses.course;
 
 
-CREATE VIEW PassedRecommendedCredit AS 
+CREATE OR REPLACE VIEW PassedRecommendedCredit AS 
     SELECT 
     student,
     SUM(credits) as recommendedcredits
@@ -349,7 +353,7 @@ CREATE VIEW PassedRecommendedCredit AS
     GROUP BY student;
      
 
-CREATE VIEW PathToGraduation AS
+CREATE OR REPLACE VIEW PathToGraduation AS
     SELECT
     BasicInformation.idnr as student,
     COALESCE(TotalCredits.totalcredits, 0) as totalCredits,
