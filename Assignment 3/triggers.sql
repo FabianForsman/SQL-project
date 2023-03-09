@@ -116,13 +116,13 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
         
     -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
     
+    DECLARE current_pos INT;
+
     BEGIN
         IF OLD.student IS NULL THEN
             RAISE EXCEPTION 'student cannot be null';
         ELSIF OLD.course IS NULL THEN
             RAISE EXCEPTION 'course cannot be null';
-        --ELSIF OLD.place IS NULL THEN
-        --    RAISE EXCEPTION 'place cannot be null';
         END IF;
 
         -- IF REGISTERED IN COURSE
@@ -132,39 +132,32 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
             WHERE student = OLD.student
             AND course = OLD.course
         )
-            -- REMOVE STUDENT FROM COURSE REGISTRATION
             THEN
-                DELETE FROM Registered 
-                WHERE student = OLD.student
-                AND course = OLD.course;
-            -- IF COURSE LIMTED
+            -- IF COURSE IS A LIMITED COURSE
             IF EXISTS (
                 SELECT code
                 FROM LimitedCourses
                 WHERE code = OLD.course
             )
-                 --CHECK IF ANY STUDENTS ON WATING LIST
                 THEN
+                 --CHECK IF ANY STUDENTS ON WATING LIST
                 IF EXISTS (
-                    SELECT student
+                    SELECT *
                     FROM WaitingList
                     WHERE course = OLD.course
-                    AND student = OLD.student
                 )                    
-                    -- Add to Register from Wait
-                    THEN                
-                    SELECT student AS stud, course AS code
+                    THEN
+                    --RAISE EXCEPTION 'DEBUG';
+                    -- Add first student from Wait to Register
+                    INSERT INTO Registered (student, course)
+                    SELECT student, course
                     FROM WaitingList
                     WHERE course = OLD.course
-                    AND student = OLD.student
                     LIMIT 1;
-                    INSERT INTO Registered (course, student)
-                    VALUES (code, stud);
 
                     -- Remove top from Wait
                     DELETE FROM WaitingList
-                    WHERE student = stud 
-                    AND course = OLD.course;
+                    WHERE position = 1 AND course = OLD.course;
 
                     -- Reshape Wait
                     UPDATE WaitingList 
@@ -173,10 +166,12 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
                     AND position > 1;
                 
                 END IF;
-                --RETURN OLD;
-        --    --ELSE\i
-        --    END IF;
             END IF;
+        -- REMOVE STUDENT FROM COURSE REGISTRATION
+        DELETE FROM Registered 
+        WHERE student = OLD.student
+        AND course = OLD.course;
+        
         -- ELSE IF STUDENT IN WAITING LIST
         ELSIF EXISTS (
             SELECT student
@@ -185,25 +180,27 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
             AND course = OLD.course
         )
             THEN
-            SELECT position AS pos
+            -- FIND CURRENT POS
+            SELECT position INTO current_pos
             FROM WaitingList
-            WHERE course = OLD.course
-            AND student = OLD.stud;
+            WHERE student = OLD.student
+            AND course = OLD.course;
 
-            -- TAKE STUDENT FROM WATING LIST
+            -- BUMP UP WAITING LIST aka UPDATE POSITIONS
+            UPDATE WaitingList SET position = position - 1
+            WHERE course = OLD.course
+            AND position >= current_pos;
+
+            -- REMOVE STUDENT FROM WATING LIST
             DELETE FROM WaitingList
             WHERE student = OLD.student
             AND course = OLD.course;
         
-        -- BUMP UP WAITING LIST aka UPDATE POSITIONS
-            UPDATE WaitingList SET position = position -1
-            WHERE student = OLD.student
-            AND position > pos;
     -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
         ELSE
         RAISE EXCEPTION 'Student is not registered to the course';
         END IF;
-    RETURN NULL;
+    RETURN OLD;
 END;
 $$LANGUAGE plpgsql;
 

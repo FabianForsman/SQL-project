@@ -24,22 +24,28 @@ INSERT INTO Registrations VALUES ('4444444444', 'CCC222');
 -- EXPECTED OUTCOME: Fail
 INSERT INTO Registrations VALUES ('3333333333', 'CCC333');
 
-SELECT student, course FROM Registered ORDER BY student;
- 
-SELECT student, course, position FROM WaitingList ORDER BY course, position;
-
 --------------   Unregister tests   --------------
 
 -- TEST #7: Unregister from an unlimited course. 
 -- EXPECTED OUTCOME: Pass
- DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC555';
+DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC555';
 
 -- TEST #8: Unnregistered from a limited course with a waiting list, when the student is registered. 
 -- EXPECTED OUTCOME: Pass
- DELETE FROM Registrations WHERE student = '1111111111' AND course = 'CCC222';
+DELETE FROM Registrations WHERE student = '1111111111' AND course = 'CCC333';
  
 -- TEST #9: Unnregistered from a limited course with a waiting list, when the student is in the middle of the waiting list. 
 -- EXPECTED OUTCOME: Pass
- DELETE FROM Registrations WHERE student = '7777777777' AND course = 'CCC222';
+DELETE FROM Registrations WHERE student = '7777777777' AND course = 'CCC222';
 
+-- TEST #10: Unregistered from an overfull course with a waiting list.
+-- EXPECTED OUTCOME: Pass
+DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC222';
 
+-- TEST #11: (10 AGAIN) Unregistered from an overfull course with a waiting list.
+-- EXPECTED OUTCOME: Pass
+DELETE FROM Registrations WHERE student = '5555555555' AND course = 'CCC222';
+
+-- TEST #12 Unregistered from a limited course without a waiting list.
+-- EXPECTED OUTCOME: Pass
+DELETE FROM Registrations WHERE student = '5555555555' AND course = 'CCC222';
