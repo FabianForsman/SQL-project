@@ -1,9 +1,3 @@
---\ir setup.sql
-
---SELECT student, course, status FROM Registrations ORDER BY student;
---SELECT student, course, credits FROM PassedCourses ORDER BY student;
-
-
 --------------   Register tests   --------------
 
 -- TEST #1: Register for an unlimited course.
@@ -30,4 +24,21 @@ INSERT INTO Registrations VALUES ('4444444444', 'CCC222');
 -- EXPECTED OUTCOME: Fail
 INSERT INTO Registrations VALUES ('3333333333', 'CCC333');
 
---SELECT student, course, status FROM Registrations ORDER BY student;
+
+--------------   Unregister tests   --------------
+
+-- TEST #7: Unregister from an unlimited course. 
+-- EXPECTED OUTCOME: Pass
+ DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC555';
+
+-- TEST #8: Unnregistered from a limited course with a waiting list, when the student is registered. 
+-- EXPECTED OUTCOME: Pass
+ DELETE FROM Registrations WHERE student = '1111111111' AND course = 'CCC222';
+
+ INSERT INTO Registrations VALUES ('7777777777', 'CCC222');
+ 
+-- TEST #9: Unnregistered from a limited course with a waiting list, when the student is in the middle of the waiting list. 
+-- EXPECTED OUTCOME: Pass
+ DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC222';
+
+

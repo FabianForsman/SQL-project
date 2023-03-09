@@ -99,10 +99,77 @@ CREATE OR REPLACE FUNCTION register() RETURNS TRIGGER AS $$
     END;
 $$LANGUAGE plpgsql;
 
-CREATE FUNCTION unregister() RETURNS TRIGGER AS $$
-BEGIN
+CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
+
     -- CODE HERE
-END
+    -- IF REGISTERED IN COURSE
+        -- REMOVE STUDENT FROM COURSE REGISTRATION
+        -- IF COURSE LIMTED
+            -- CHECK IF ANY STUDENTS ON WATING LIST
+            -- Remove top from Wait
+            -- Add to Register
+            -- Reshape Wait
+
+    -- ELSE IF STUDENT IN WAITING LIST
+        -- TAKE STUDENT FROM WATING LIST AND PUT IN REGISTERED
+        -- BUMP UP WAITING LIST aka UPDATE POSITIONS
+        
+    -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
+    
+    BEGIN
+        IF OLD.student IS NULL THEN
+            RAISE EXCEPTION 'student cannot be null';
+        ELSIF OLD.course IS NULL THEN
+            RAISE EXCEPTION 'course cannot be null';
+        --ELSIF OLD.place IS NULL THEN
+        --    RAISE EXCEPTION 'place cannot be null';
+        END IF;
+
+        -- IF REGISTERED IN COURSE
+        IF EXISTS(
+            SELECT student
+            FROM Registered
+            WHERE student = OLD.student
+            AND course = OLD.course
+        )
+            -- REMOVE STUDENT FROM COURSE REGISTRATION
+            THEN
+                DELETE FROM Registered 
+                WHERE student = OLD.student
+                AND course = OLD.course;
+            -- IF COURSE LIMTED
+            IF EXISTS (
+                SELECT code
+                FROM LimitedCourses
+                WHERE code = OLD.course
+            )
+             --CHECK IF ANY STUDENTS ON WATING LIST
+                THEN
+                IF EXISTS (
+                    SELECT student
+                    FROM WaitingList
+                    WHERE course = OLD.course
+                    AND student = OLD.student
+                )
+                    THEN                
+                    -- Add to Register from Wait
+                    SELECT student AS stud, course AS code
+                    FROM WaitingList
+                    WHERE course = OLD.course
+                    AND student = OLD.student
+                    LIMIT 1;
+                    INSERT INTO Registered (course, student)
+                    VALUES (code, stud);
+                    -- Remove top from Wait
+                END IF;
+                    -- Reshape Wait
+                --RETURN OLD;
+        --    --ELSE\i
+        --    END IF;
+            END IF;
+        END IF;
+    RETURN NULL;
+END;
 $$LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION nextStudentPos(CHAR(6)) RETURNS INT AS $nextStudentPos$

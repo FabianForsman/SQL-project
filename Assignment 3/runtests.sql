@@ -12,4 +12,14 @@ GRANT ALL ON SCHEMA public TO CURRENT_USER;
 -- Note that these are not SQL statements but rather Postgres commands (no terminating ;). 
 \ir setup.sql
 \ir triggers.sql
+
+SELECT student, course FROM Registered ORDER BY student;
+
+SELECT student, course, position FROM WaitingList ORDER BY position;
+
+
 \ir tests.sql
+
+SELECT student, course FROM Registered ORDER BY student;
+ 
+SELECT student, course, position FROM WaitingList ORDER BY position;
