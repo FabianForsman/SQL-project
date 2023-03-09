@@ -24,6 +24,9 @@ INSERT INTO Registrations VALUES ('4444444444', 'CCC222');
 -- EXPECTED OUTCOME: Fail
 INSERT INTO Registrations VALUES ('3333333333', 'CCC333');
 
+SELECT student, course FROM Registered ORDER BY student;
+ 
+SELECT student, course, position FROM WaitingList ORDER BY course, position;
 
 --------------   Unregister tests   --------------
 
@@ -34,11 +37,9 @@ INSERT INTO Registrations VALUES ('3333333333', 'CCC333');
 -- TEST #8: Unnregistered from a limited course with a waiting list, when the student is registered. 
 -- EXPECTED OUTCOME: Pass
  DELETE FROM Registrations WHERE student = '1111111111' AND course = 'CCC222';
-
- INSERT INTO Registrations VALUES ('7777777777', 'CCC222');
  
 -- TEST #9: Unnregistered from a limited course with a waiting list, when the student is in the middle of the waiting list. 
 -- EXPECTED OUTCOME: Pass
- DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC222';
+ DELETE FROM Registrations WHERE student = '7777777777' AND course = 'CCC222';
 
 

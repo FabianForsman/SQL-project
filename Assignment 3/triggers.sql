@@ -111,7 +111,7 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
             -- Reshape Wait
 
     -- ELSE IF STUDENT IN WAITING LIST
-        -- TAKE STUDENT FROM WATING LIST AND PUT IN REGISTERED
+        -- TAKE STUDENT FROM WATING LIST
         -- BUMP UP WAITING LIST aka UPDATE POSITIONS
         
     -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
@@ -143,16 +143,16 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
                 FROM LimitedCourses
                 WHERE code = OLD.course
             )
-             --CHECK IF ANY STUDENTS ON WATING LIST
+                 --CHECK IF ANY STUDENTS ON WATING LIST
                 THEN
                 IF EXISTS (
                     SELECT student
                     FROM WaitingList
                     WHERE course = OLD.course
                     AND student = OLD.student
-                )
-                    THEN                
+                )                    
                     -- Add to Register from Wait
+                    THEN                
                     SELECT student AS stud, course AS code
                     FROM WaitingList
                     WHERE course = OLD.course
@@ -160,13 +160,48 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
                     LIMIT 1;
                     INSERT INTO Registered (course, student)
                     VALUES (code, stud);
+
                     -- Remove top from Wait
-                END IF;
+                    DELETE FROM WaitingList
+                    WHERE student = stud 
+                    AND course = OLD.course;
+
                     -- Reshape Wait
+                    UPDATE WaitingList 
+                    SET position = position - 1 
+                    WHERE course = OLD.course
+                    AND position > 1;
+                
+                END IF;
                 --RETURN OLD;
         --    --ELSE\i
         --    END IF;
             END IF;
+        -- ELSE IF STUDENT IN WAITING LIST
+        ELSIF EXISTS (
+            SELECT student
+            FROM WaitingList
+            WHERE student = OLD.student
+            AND course = OLD.course
+        )
+            THEN
+            SELECT position AS pos
+            FROM WaitingList
+            WHERE course = OLD.course
+            AND student = OLD.stud;
+
+            -- TAKE STUDENT FROM WATING LIST
+            DELETE FROM WaitingList
+            WHERE student = OLD.student
+            AND course = OLD.course;
+        
+        -- BUMP UP WAITING LIST aka UPDATE POSITIONS
+            UPDATE WaitingList SET position = position -1
+            WHERE student = OLD.student
+            AND position > pos;
+    -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
+        ELSE
+        RAISE EXCEPTION 'Student is not registered to the course';
         END IF;
     RETURN NULL;
 END;
