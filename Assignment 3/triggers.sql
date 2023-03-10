@@ -215,8 +215,9 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
             WHERE student = OLD.student
             AND course = OLD.course
         )
-        -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
-        RAISE EXCEPTION '% is not registered to the %', OLD.student, OLD.course;
+        THEN
+            -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
+            RAISE EXCEPTION '% is not registered to the %', OLD.student, OLD.course;
         END IF;
     RETURN OLD;
 END;
