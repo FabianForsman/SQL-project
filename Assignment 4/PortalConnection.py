@@ -1,5 +1,5 @@
 import psycopg2
-
+import get_json
 
 class PortalConnection:
     def __init__(self):
@@ -9,16 +9,17 @@ class PortalConnection:
             password="postgres")
         self.conn.autocommit = True
 
-    def getInfo(self,student):
-      with self.conn.cursor() as cur:
+    def getInfo(self, student):
+      # with self.conn.cursor() as cur:
+      with get_json.getInfoJSON(student) as cur:
         # Here's a start of the code for this part
-        sql = """
-                SELECT jsonb_build_object(
-                     'student', s.idnr
-                    ,'name', s.name
-                ) :: TEXT
-                FROM BasicInformation AS s
-                WHERE s.idnr = %s;"""
+        #sql = """
+        #        SELECT jsonb_build_object(
+        #             'student', s.idnr
+        #            ,'name', s.name
+        #        ) :: TEXT
+        #        FROM BasicInformation AS s
+        #        WHERE s.idnr = %s;"""
         cur.execute(sql, (student,))
         res = cur.fetchone()
         if res:
