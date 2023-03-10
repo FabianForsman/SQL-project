@@ -32,7 +32,7 @@ SELECT student, course, position FROM WaitingList ORDER BY course, position;
 
 -- TEST #7: Unregister from an unlimited course. 
 -- EXPECTED OUTCOME: Pass
-DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC555';
+ DELETE FROM Registrations WHERE student = '2222222222' AND course = 'CCC555';
 
 -- TEST #8: Unnregistered from a limited course with a waiting list, when the student is registered. 
 -- EXPECTED OUTCOME: Pass
