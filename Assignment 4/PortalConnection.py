@@ -25,13 +25,19 @@ class PortalConnection:
 
     def unregister(self, student, courseCode):
         with self.conn.cursor() as cur:
-            sql = f"DELETE FROM Registrations WHERE student = '{student}' AND course = '{courseCode}'"
-            try:
-                cur.execute(sql)
-                return '{"success":true}'
-            except psycopg2.Error as e:
-                message = getError(e)
-                return '{"success":false, "error": "' + message + '"}'
+            print("STARTING")
+            sql = "DELETE FROM Registrations WHERE student ='"+student+"' AND course ='"+courseCode+"'"
+            if_exists = "SELECT student FROM Registrations WHERE student = '%s' AND course = '%s'" % (student, courseCode)
+            cur.execute(if_exists)
+            if cur.fetchone():
+                try:
+                    cur.execute(sql)
+                    return '{"success":true}'
+                except psycopg2.Error as e:
+                    message = getError(e)
+                    return '{"success":false, "error": "' + message + '"}'
+            else:
+                return '{"success":false, "error": "Student is not registered in the course"}'
 
 def getError(e):
     message = repr(e)
