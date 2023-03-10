@@ -10,38 +10,28 @@ class PortalConnection:
         self.conn.autocommit = True
 
     def getInfo(self, student):
-      # with self.conn.cursor() as cur:
-      with get_json.getInfoJSON(student) as cur:
-        # Here's a start of the code for this part
-        #sql = """
-        #        SELECT jsonb_build_object(
-        #             'student', s.idnr
-        #            ,'name', s.name
-        #        ) :: TEXT
-        #        FROM BasicInformation AS s
-        #        WHERE s.idnr = %s;"""
-        cur.execute(sql, (student,))
-        res = cur.fetchone()
-        if res:
-            return (str(res[0]))
-        else:
-            return """{"student":"Not found :("}"""
+      with self.conn.cursor() as cur:
+        return get_json.getInfoJSON(student)
 
     def register(self, student, courseCode):
-        try:
-            #Your code goes here! Remove this comment and the line below it. 
-            return """{"success":false, "error":"Registration not implemented"}"""
-        except psycopg2.Error as e:
-            message = getError(e)
-            return '{"success":false, "error": "'+message+'"}'
+        with self.conn.cursor() as cur:
+            sql = f"INSERT INTO Registrations VALUES('{student}', '{courseCode}')"
+            try:
+                cur.execute(sql)
+                return '{"success":true}'
+            except psycopg2.Error as e:
+                message = getError(e)
+                return '{"success":false, "error": "'+message+'"}'
 
     def unregister(self, student, courseCode):
-        try:
-            #Your code goes here! Remove this comment and the line below it. 
-            return """{"success":false, "error":"Unregistration not implemented"}"""
-        except psycopg2.Error as e:
-            message = getError(e)
-            return '{"success":false, "error": "'+message+'"}'
+        with self.conn.cursor() as cur:
+            sql = f"DELETE FROM Registrations WHERE student = '{student}' AND course = '{courseCode}'"
+            try:
+                cur.execute(sql)
+                return '{"success":true}'
+            except psycopg2.Error as e:
+                message = getError(e)
+                return '{"success":false, "error": "' + message + '"}'
 
 def getError(e):
     message = repr(e)

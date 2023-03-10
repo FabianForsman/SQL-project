@@ -26,23 +26,23 @@ def getInfoJSON(student):
             dictionary['registered'] = create_subdict(registration_query, cur, student)
             
             seminar_query = """SELECT seminarcourses
-                                FROM SeminarCourses WHERE student = %s;"""
+                                FROM PathToGraduation WHERE student = %s;"""
             dictionary['seminarCourses'] = create_subdict(seminar_query, cur, student)[0]['seminarcourses']
 
             math_query = """SELECT mathcredits
-                            FROM MathCredits WHERE student = %s;"""
+                            FROM PathToGraduation WHERE student = %s;"""
             dictionary['mathCredits'] = create_subdict(math_query, cur, student)[0]['mathcredits']
 
             researchCredits_query = """SELECT researchcredits
-                            FROM ResearchCredits WHERE student = %s;"""
+                            FROM PathToGraduation WHERE student = %s;"""
             dictionary['researchCredits'] = create_subdict(researchCredits_query, cur, student)[0]['researchcredits']
 
             totalcredits_query = """SELECT totalcredits
-                            FROM TotalCredits WHERE student = %s;"""
+                            FROM PathToGraduation WHERE student = %s;"""
             dictionary['totalCredits'] = create_subdict(totalcredits_query, cur, student)[0]['totalcredits']
 
             graduate_query = """SELECT qualified
-                            FROM Qualified WHERE student = %s;"""
+                            FROM PathToGraduation WHERE student = %s;"""
             dictionary['canGraduate'] = create_subdict(graduate_query, cur, student)[0]['qualified']
 
             return str(json.dumps(dictionary))
