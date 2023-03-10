@@ -180,10 +180,10 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
                 END IF;
             END IF;
 
-        -- REMOVE STUDENT FROM COURSE REGISTRATION
-        DELETE FROM Registered 
-        WHERE student = OLD.student
-        AND course = OLD.course;
+            -- REMOVE STUDENT FROM COURSE REGISTRATION
+            DELETE FROM Registered 
+            WHERE student = OLD.student
+            AND course = OLD.course;
         
         -- ELSE IF STUDENT IN WAITING LIST
         ELSIF EXISTS (
@@ -209,8 +209,13 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
             WHERE student = OLD.student
             AND course = OLD.course;
         
+        ELSIF NOT EXISTS(
+            SELECT student
+            FROM Registered
+            WHERE student = OLD.student
+            AND course = OLD.course
+        )
         -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
-        ELSE
         RAISE EXCEPTION '% is not registered to the %', OLD.student, OLD.course;
         END IF;
     RETURN OLD;
