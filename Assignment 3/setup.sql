@@ -128,7 +128,7 @@ CREATE TABLE Registered(
 CREATE TABLE WaitingList(
     student CHAR(10) REFERENCES Students(idnr),
     course CHAR(6) REFERENCES LimitedCourses(code),
-    position INT NOT NULL CHECK (position > 0),
+    position INT NOT NULL CHECK (position >= 0),
     PRIMARY KEY(student, course)
 );
 

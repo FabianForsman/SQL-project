@@ -116,7 +116,9 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
         
     -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
     
-    DECLARE current_pos INT;
+    DECLARE 
+        current_pos INT;
+        max_capacity INT;
 
     BEGIN
         IF OLD.student IS NULL THEN
@@ -140,33 +142,44 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
                 WHERE code = OLD.course
             )
                 THEN
-                 --CHECK IF ANY STUDENTS ON WATING LIST
-                IF EXISTS (
-                    SELECT *
-                    FROM WaitingList
-                    WHERE course = OLD.course
-                )                    
-                    THEN
-                    --RAISE EXCEPTION 'DEBUG';
-                    -- Add first student from Wait to Register
-                    INSERT INTO Registered (student, course)
-                    SELECT student, course
-                    FROM WaitingList
-                    WHERE course = OLD.course
-                    LIMIT 1;
+                IF (
+                    (SELECT COUNT(student)
+                    FROM Registered
+                    WHERE course = OLD.course)
+                    <=
+                    (SELECT capacity
+                    FROM LimitedCourses
+                    WHERE code = OLD.course)
+                )
+                THEN
+                    --CHECK IF ANY STUDENTS ON WATING LIST
+                    IF EXISTS (
+                        SELECT *
+                        FROM WaitingList
+                        WHERE course = OLD.course
+                    )                    
+                        THEN
+                        --RAISE EXCEPTION 'DEBUG';
+                        -- Add first student from Wait to Register
+                        INSERT INTO Registered (student, course)
+                        SELECT student, course
+                        FROM WaitingList
+                        WHERE course = OLD.course
+                        LIMIT 1;
 
-                    -- Remove top from Wait
-                    DELETE FROM WaitingList
-                    WHERE position = 1 AND course = OLD.course;
+                        -- Remove top from Wait
+                        DELETE FROM WaitingList
+                        WHERE position = 1 AND course = OLD.course;
 
-                    -- Reshape Wait
-                    UPDATE WaitingList 
-                    SET position = position - 1 
-                    WHERE course = OLD.course
-                    AND position > 1;
-                
+                        -- Reshape Wait
+                        UPDATE WaitingList 
+                        SET position = position - 1 
+                        WHERE course = OLD.course
+                        AND position > 1;
+                    END IF;
                 END IF;
             END IF;
+
         -- REMOVE STUDENT FROM COURSE REGISTRATION
         DELETE FROM Registered 
         WHERE student = OLD.student
