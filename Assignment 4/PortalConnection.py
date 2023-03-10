@@ -11,7 +11,7 @@ class PortalConnection:
 
     def getInfo(self, student):
       with self.conn.cursor() as cur:
-        return get_json.getInfoJSON(student)
+        return get_json.getInfo(student)
 
     def register(self, student, courseCode):
         with self.conn.cursor() as cur:
@@ -25,7 +25,6 @@ class PortalConnection:
 
     def unregister(self, student, courseCode):
         with self.conn.cursor() as cur:
-            print("STARTING")
             sql = "DELETE FROM Registrations WHERE student ='"+student+"' AND course ='"+courseCode+"'"
             if_exists = "SELECT student FROM Registrations WHERE student = '%s' AND course = '%s'" % (student, courseCode)
             cur.execute(if_exists)

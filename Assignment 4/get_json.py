@@ -2,7 +2,7 @@ import json
 import psycopg2
 
 
-def getInfoJSON(student):
+def getInfo(student):
     with psycopg2.connect(
             host="localhost",
             user="postgres",
