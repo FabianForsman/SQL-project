@@ -19,6 +19,6 @@ GRANT ALL ON SCHEMA public TO CURRENT_USER;
 
 \ir tests.sql
 
-SELECT student, course FROM Registered ORDER BY student;
+--SELECT student, course FROM Registered ORDER BY student;
  
-SELECT student, course, position FROM WaitingList ORDER BY course, position;
+--SELECT student, course, position FROM WaitingList ORDER BY course, position;

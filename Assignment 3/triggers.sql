@@ -127,26 +127,6 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
             RAISE EXCEPTION 'course cannot be null';
         END IF;
 
-       -- -- IF NOT REGISTERED OR WAITING
-       --IF NOT EXISTS
-       --    (SELECT student
-       --    FROM Registered
-       --    WHERE student = OLD.student
-       --    AND course = OLD.course
-       --)
-       -- THEN
-       --     IF NOT EXISTS(
-       --         SELECT student
-       --         FROM WaitingList
-       --         WHERE student = OLD.student
-       --         AND course = OLD.course
-       --     )
-       --     THEN
-       --     -- ELSE RAISE EXCEPTION 'Student not registred or on wait list'
-       --     RAISE EXCEPTION '% is not registered to the %', OLD.student, OLD.course;
-       --     END IF;
-       -- END IF;
-
         -- IF REGISTERED IN COURSE
         IF EXISTS(
             SELECT student
@@ -179,7 +159,6 @@ CREATE OR REPLACE FUNCTION unregister() RETURNS TRIGGER AS $$
                         WHERE course = OLD.course
                     )                    
                         THEN
-                        --RAISE EXCEPTION 'DEBUG';
                         -- Add first student from Wait to Register
                         INSERT INTO Registered (student, course)
                         SELECT student, course

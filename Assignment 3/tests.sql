@@ -26,9 +26,9 @@ INSERT INTO Registrations VALUES ('3333333333', 'CCC333');
 
 --------------   Unregister tests   --------------
 
-SELECT student, course FROM Registered ORDER BY student;
+--SELECT student, course FROM Registered ORDER BY student;
 
-SELECT student, course, position FROM WaitingList ORDER BY course, position;
+-- SELECT student, course, position FROM WaitingList ORDER BY course, position;
 
 -- TEST #7: Unregister from an unlimited course. 
 -- EXPECTED OUTCOME: Pass
